@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brotherhood Empire Bot</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .status {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .commands {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .command {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #2196f3;
+        }
+        .command code {
+            background: #f8f9fa;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏰 Brotherhood Empire Bot</h1>
+        
+        <div class="status">
+            <h2>Status</h2>
+            <p>✅ Bot is online and ready to receive commands</p>
+            <p>🌐 Webhook URL: <code>https://ghl-automation-ai.netlify.app/.netlify/functions/telegram-webhook</code></p>
+        </div>
+
+        <div class="commands">
+            <h2>Available Commands</h2>
+            <div class="command">
+                <code>/start</code> - Initialize the bot and see available commands
+            </div>
+            <div class="command">
+                <code>/status</code> - Check system status
+            </div>
+            <div class="command">
+                <code>/help</code> - Show help message
+            </div>
+            <div class="command">
+                <code>/deploy_agent [name] [role]</code> - Deploy a new agent
+            </div>
+            <div class="command">
+                <code>/list_agents</code> - List all active agents
+            </div>
+            <div class="command">
+                <code>/send_command [agent] [command]</code> - Send a command to an agent
+            </div>
+            <div class="command">
+                <code>/terminate_agent [name]</code> - Terminate an agent
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>To use the bot, search for <code>@Brotherhoodempirebot</code> on Telegram</p>
+        </div>
+    </div>
+</body>
+</html>

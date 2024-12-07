@@ -1,20 +1,46 @@
-const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 
 // Your bot token
-const token = '7838814763:AAGVkweVaww77zuWb6lUz4Fg6Xm5yiiEido';
+const token = process.env.TELEGRAM_BOT_TOKEN || '7838814763:AAGVkweVaww77zuWb6lUz4Fg6Xm5yiiEido';
 
-async function setWebhook(url) {
+async function deleteWebhook() {
     try {
-        const response = await axios.get(`https://api.telegram.org/bot${token}/setWebhook?url=${url}`);
-        console.log('Webhook set response:', response.data);
+        const response = await axios.get(`https://api.telegram.org/bot${token}/deleteWebhook`);
+        console.log('Webhook deleted:', response.data);
     } catch (error) {
-        console.error('Error setting webhook:', error.response?.data || error.message);
+        console.error('Error deleting webhook:', error.response?.data || error.message);
     }
 }
 
-// Replace this with your Netlify URL after deployment
-const netlifyUrl = process.env.URL || 'https://your-netlify-site.netlify.app';
+async function setWebhook(url) {
+    try {
+        // First, delete any existing webhook
+        await deleteWebhook();
+        
+        // Set the new webhook
+        const response = await axios.get(`https://api.telegram.org/bot${token}/setWebhook?url=${url}&drop_pending_updates=true`);
+        console.log('Webhook set response:', response.data);
+        
+        // Get webhook info
+        const infoResponse = await axios.get(`https://api.telegram.org/bot${token}/getWebhookInfo`);
+        console.log('\nWebhook info:', infoResponse.data);
+
+        // Test the bot's ability to send messages
+        const testMessage = '🔄 Bot redeployed and webhook updated!';
+        const sendMessageResponse = await axios.post(`https://api.telegram.org/bot${token}/sendMessage`, {
+            chat_id: process.env.ADMIN_CHAT_ID || '5085462345', // Your chat ID
+            text: testMessage,
+            parse_mode: 'Markdown'
+        });
+        console.log('\nTest message sent:', sendMessageResponse.data);
+    } catch (error) {
+        console.error('Error:', error.response?.data || error.message);
+    }
+}
+
+// Your Netlify URL
+const netlifyUrl = 'https://ghl-automation-ai.netlify.app';
 const webhookUrl = `${netlifyUrl}/.netlify/functions/telegram-webhook`;
 
+console.log(`Setting webhook URL to: ${webhookUrl}`);
 setWebhook(webhookUrl);

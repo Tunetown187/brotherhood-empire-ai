@@ -1,13 +1,17 @@
 [build]
-  command = "pip install -r backend/requirements.txt"
+  command = "cd netlify/functions/telegram-webhook && npm install"
   functions = "netlify/functions"
   publish = "public"
 
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+  external_node_modules = ["node-telegram-bot-api"]
 
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
+
+[dev]
+  autoLaunch = false
