@@ -3,6 +3,15 @@
   functions = "netlify/functions"
   publish = "public"
 
+[build.environment]
+  PYTHON_VERSION = "3.11"
+  NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
