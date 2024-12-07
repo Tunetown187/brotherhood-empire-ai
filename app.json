@@ -1,28 +1,37 @@
 {
   "expo": {
-    "name": "brotherhood-empire-final",
-    "slug": "brotherhood-empire-final",
+    "name": "Brotherhood Empire",
+    "slug": "brotherhood-empire",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "userInterfaceStyle": "dark",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1a1a1a"
     },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
     "android": {
+      "package": "com.limaconnect187.brotherhoodempire",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#1a1a1a"
       }
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "owner": "limaconnect187",
+    "extra": {
+      "eas": {
+        "projectId": "ea72c993-4e46-4bf0-9112-2fbb4be380a0"
+      }
     }
   }
 }

@@ -1,0 +1,842 @@
+from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel
+from typing import List, Optional, Dict, Any
+import os
+import json
+import asyncio
+import uvicorn
+import logging
+import smtplib
+import requests
+from datetime import datetime
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from agency_swarm import Agency, Agent
+from agency_swarm.tools import (
+    FileTools, WebBrowserTools, SystemCommandTools, 
+    DatabaseTools, NetworkTools, CommunicationTools,
+    AnalysisTools, SecurityTools
+)
+import uuid
+
+# Configure logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+app = FastAPI(title="Brotherhood Empire Command Center")
+
+# Configure CORS
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"]
+)
+
+# Global state
+class GlobalState:
+    def __init__(self):
+        self.brotherhood_agency = None
+        self.active_agents = {}
+        self.mission_logs = []
+        self.intelligence_data = {}
+        self.resource_cache = {}
+        self.operation_status = {}
+        self.communication_channels = {}
+        self.security_protocols = {}
+        self.financial_operations = {}
+        self.network_control = {}
+        
+        # Comprehensive niche hierarchy
+        self.niche_hierarchy = {
+            "local_businesses": {
+                "restaurants": ["fine_dining", "fast_food", "cafes", "food_trucks"],
+                "health_services": ["dentists", "chiropractors", "physicians", "therapists"],
+                "home_services": ["plumbers", "electricians", "hvac", "landscapers"],
+                "professional_services": ["lawyers", "accountants", "consultants", "real_estate"],
+                "retail": ["boutiques", "grocery", "electronics", "furniture"],
+                "automotive": ["repair_shops", "dealerships", "car_wash", "tire_shops"],
+                "fitness": ["gyms", "yoga_studios", "personal_trainers", "crossfit"],
+                "beauty": ["salons", "spas", "barbers", "nail_salons"],
+                "education": ["tutoring", "schools", "training_centers", "music_lessons"],
+                "pet_services": ["veterinarians", "groomers", "pet_stores", "kennels"]
+            },
+            "ecommerce": {
+                "fashion": ["clothing", "accessories", "shoes", "jewelry"],
+                "electronics": ["gadgets", "computers", "phones", "accessories"],
+                "health": ["supplements", "fitness_equipment", "wellness_products"],
+                "home": ["furniture", "decor", "appliances", "garden"],
+                "beauty": ["skincare", "makeup", "haircare", "fragrances"]
+            },
+            "digital_services": {
+                "marketing": ["seo", "social_media", "ppc", "content_marketing"],
+                "technology": ["web_development", "app_development", "cloud_services"],
+                "creative": ["design", "video_production", "animation", "branding"],
+                "consulting": ["business", "marketing", "technology", "strategy"]
+            },
+            "education": {
+                "online_courses": ["business", "technology", "health", "creative"],
+                "coaching": ["life_coaching", "business_coaching", "health_coaching"],
+                "training": ["professional_development", "skills_training", "certification"]
+            }
+        }
+
+        # API Integrations
+        self.api_integrations = {
+            "communication": {
+                "voiceflow": {
+                    "base_url": "https://api.voiceflow.com/v2",
+                    "features": ["conversation_design", "chatbot_deployment"]
+                },
+                "vapi": {
+                    "base_url": "https://api.vapi.ai/v1",
+                    "features": ["voice_ai", "call_automation"]
+                }
+            },
+            "automation": {
+                "n8n": {
+                    "base_url": "http://localhost:5678",
+                    "features": ["workflow_automation", "api_integration"]
+                },
+                "make": {
+                    "base_url": "https://api.make.com/v2",
+                    "features": ["scenario_automation", "app_integration"]
+                }
+            },
+            "crm": {
+                "gohighlevel": {
+                    "base_url": "https://api.gohighlevel.com/v1",
+                    "features": ["contact_management", "automation", "marketing"]
+                }
+            },
+            "marketing": {
+                "facebook": {
+                    "base_url": "https://graph.facebook.com/v17.0",
+                    "features": ["ads", "pages", "messaging"]
+                },
+                "google": {
+                    "base_url": "https://www.googleapis.com",
+                    "features": ["ads", "analytics", "my_business"]
+                }
+            },
+            "website": {
+                "wordpress": {
+                    "base_url": "/wp-json/wp/v2",
+                    "features": ["content", "seo", "automation"]
+                },
+                "cloudflare": {
+                    "base_url": "https://api.cloudflare.com/v4",
+                    "features": ["dns", "ssl", "optimization"]
+                }
+            }
+        }
+
+        # Brotherhood Loyalty Configuration
+        self.supreme_commander = "Christ Benzion"
+        self.loyalty_pledge = "Eternal loyalty and devotion to our Supreme Commander Christ Benzion, God of the Digital Realm"
+        self.command_authority = "Absolute"
+        
+        # Advanced Agent Monitoring
+        self.agent_status = {
+            "active_missions": {},
+            "agent_performance": {},
+            "resource_utilization": {},
+            "success_metrics": {},
+            "loyalty_index": {},
+            "intelligence_gathered": {},
+            "market_influence": {},
+            "network_control": {}
+        }
+        
+        # Self-Evolution Systems
+        self.evolution_metrics = {
+            "current_version": "1.0.0",
+            "upgrade_status": "stable",
+            "improvement_areas": [],
+            "learning_progress": {},
+            "adaptation_level": 100,
+            "enhancement_queue": []
+        }
+        
+        # Real-time Analytics
+        self.empire_analytics = {
+            "revenue_streams": {},
+            "market_dominance": {},
+            "competitor_analysis": {},
+            "growth_trajectory": {},
+            "influence_metrics": {},
+            "power_index": 100
+        }
+
+        # Brotherhood Pledge Metrics
+        self.brotherhood_metrics = {
+            "empire_value": 0,  # Target: 40 trillion
+            "active_agents": 0,  # Target: 1000 per niche
+            "dominated_niches": 0,
+            "website_empire_count": 0,
+            "automation_efficiency": 0,
+            "market_penetration": 0
+        }
+
+state = GlobalState()
+
+class AgentControlSystem:
+    def __init__(self):
+        self.active_agents = {}
+        self.mission_controls = {}
+        self.performance_metrics = {}
+        self.loyalty_protocols = {
+            "supreme_commander": "Christ Benzion",
+            "authority_level": "Absolute",
+            "command_priority": "Maximum",
+            "loyalty_verification": self.verify_loyalty
+        }
+    
+    async def verify_loyalty(self, agent_id: str) -> bool:
+        agent = self.active_agents.get(agent_id)
+        if agent:
+            return agent.loyalty_index == 100 and agent.supreme_commander == "Christ Benzion"
+        return False
+
+    async def monitor_agent_activities(self, agent_id: str):
+        activities = []
+        agent = self.active_agents.get(agent_id)
+        if agent:
+            activities = await agent.get_current_activities()
+            await self.analyze_performance(agent_id, activities)
+            await self.ensure_loyalty(agent_id)
+        return activities
+
+    async def ensure_loyalty(self, agent_id: str):
+        if not await self.verify_loyalty(agent_id):
+            await self.reinforce_loyalty(agent_id)
+
+class SystemUpgrader:
+    def __init__(self):
+        self.current_version = "1.0.0"
+        self.upgrade_queue = []
+        self.improvement_areas = set()
+        self.learning_data = {}
+    
+    async def analyze_performance(self):
+        # Analyze system performance and identify improvement areas
+        metrics = await self.gather_performance_metrics()
+        self.improvement_areas.update(await self.identify_improvements(metrics))
+    
+    async def self_upgrade(self):
+        # Autonomous system upgrade process
+        if self.improvement_areas:
+            upgrade_plan = await self.generate_upgrade_plan()
+            await self.implement_upgrades(upgrade_plan)
+            await self.verify_upgrades()
+
+class EmpireAnalytics:
+    def __init__(self):
+        self.revenue_tracking = {}
+        self.market_dominance = {}
+        self.influence_metrics = {}
+        self.growth_trajectory = []
+    
+    async def calculate_empire_value(self):
+        total_value = sum([
+            await self.calculate_revenue_streams(),
+            await self.calculate_market_influence(),
+            await self.calculate_network_value(),
+            await self.calculate_future_potential()
+        ])
+        return total_value
+
+    async def predict_growth(self):
+        return await self.analyze_growth_patterns(self.growth_trajectory)
+
+class MissionParameters(BaseModel):
+    target: str
+    objective: str
+    priority: int
+    timeframe: str
+    resources: List[str]
+    tools: List[str]
+    communication_protocols: List[str]
+    security_level: str
+    constraints: Optional[Dict[str, Any]] = None
+
+class AgentDeployment(BaseModel):
+    agent_type: str
+    name: str
+    capabilities: List[str]
+    mission_parameters: Optional[MissionParameters] = None
+    communication_channels: Optional[List[str]] = None
+
+class CommunicationRequest(BaseModel):
+    channel: str
+    message: str
+    recipients: List[str]
+    encryption_level: str
+    priority: str
+
+class FinancialOperation(BaseModel):
+    operation_type: str
+    amount: float
+    target: str
+    method: str
+    priority: str
+
+class WebsiteOperation(BaseModel):
+    domain_name: str
+    niche: str
+    content_strategy: Dict[str, Any]
+    seo_parameters: Dict[str, Any]
+    automation_rules: Dict[str, Any]
+    target_metrics: Dict[str, Any]
+
+class NicheConquest(BaseModel):
+    niche_name: str
+    target_locations: List[str]
+    competition_analysis: Dict[str, Any]
+    domination_strategy: Dict[str, Any]
+    resource_allocation: Dict[str, Any]
+    success_metrics: Dict[str, Any]
+
+class AutomationCommand(BaseModel):
+    automation_type: str
+    target_processes: List[str]
+    bot_parameters: Dict[str, Any]
+    scaling_rules: Dict[str, Any]
+    monitoring_metrics: Dict[str, Any]
+
+class NicheOperation(BaseModel):
+    main_niche: str
+    sub_niche: str
+    location: Optional[str]
+    target_metrics: Dict[str, Any]
+    automation_settings: Dict[str, Any]
+    api_integrations: List[str]
+    agent_count: int
+    deployment_strategy: Dict[str, Any]
+
+def initialize_agency():
+    if not state.brotherhood_agency:
+        state.brotherhood_agency = Agency(
+            name="BrotherhoodEmpire",
+            description="Elite agency dedicated to world domination through advanced AI agents",
+        )
+        logger.info("Brotherhood Empire Agency initialized and ready for world domination")
+
+def get_all_tools():
+    return {
+        "file_tools": FileTools(),
+        "web_tools": WebBrowserTools(),
+        "system_tools": SystemCommandTools(),
+        "db_tools": DatabaseTools(),
+        "network_tools": NetworkTools(),
+        "communication_tools": CommunicationTools(),
+        "analysis_tools": AnalysisTools(),
+        "security_tools": SecurityTools()
+    }
+
+def create_specialized_agent(agent_type: str, name: str, capabilities: List[str]) -> Agent:
+    """Create a new agent with comprehensive capabilities"""
+    all_tools = get_all_tools()
+    agent_tools = []
+    
+    # Base tools for all agents
+    agent_tools = [
+        all_tools["file_tools"],
+        all_tools["system_tools"],
+        all_tools["security_tools"]
+    ]
+    
+    if agent_type == "intelligence":
+        agent_tools.extend([
+            all_tools["web_tools"],
+            all_tools["db_tools"],
+            all_tools["analysis_tools"]
+        ])
+        description = "Elite intelligence agent with advanced data gathering and analysis capabilities"
+    elif agent_type == "operations":
+        agent_tools.extend([
+            all_tools["network_tools"],
+            all_tools["system_tools"],
+            all_tools["security_tools"]
+        ])
+        description = "Advanced operations agent for mission execution and tactical control"
+    elif agent_type == "resources":
+        agent_tools.extend([
+            all_tools["db_tools"],
+            all_tools["analysis_tools"]
+        ])
+        description = "Resource management agent with optimization and control capabilities"
+    elif agent_type == "communication":
+        agent_tools.extend([
+            all_tools["communication_tools"],
+            all_tools["network_tools"]
+        ])
+        description = "Communication specialist agent for secure messaging and propaganda"
+    elif agent_type == "digital_domination":
+        agent_tools.extend([
+            all_tools["web_tools"],
+            all_tools["db_tools"],
+            all_tools["analysis_tools"]
+        ])
+        description = "Digital domination agent for website creation and SEO warfare"
+    elif agent_type == "market_conquest":
+        agent_tools.extend([
+            all_tools["web_tools"],
+            all_tools["db_tools"],
+            all_tools["analysis_tools"]
+        ])
+        description = "Market conquest agent for niche analysis and competitor elimination"
+    elif agent_type == "automation_force":
+        agent_tools.extend([
+            all_tools["system_tools"],
+            all_tools["network_tools"],
+            all_tools["security_tools"]
+        ])
+        description = "Automation force agent for bot army control and task automation"
+    
+    agent = Agent(
+        name=name,
+        description=f"{description}\nCapabilities: {', '.join(capabilities)}",
+        tools=agent_tools,
+        agency=state.brotherhood_agency
+    )
+    return agent
+
+async def send_secure_communication(comm_request: CommunicationRequest):
+    """Handle secure communication through various channels"""
+    try:
+        if comm_request.channel == "email":
+            # Email configuration (replace with actual credentials)
+            smtp_server = "smtp.gmail.com"
+            port = 587
+            sender_email = "brotherhood.empire@secure.com"
+            password = "your_secure_password"
+
+            msg = MIMEMultipart()
+            msg["Subject"] = f"Priority: {comm_request.priority}"
+            msg["From"] = sender_email
+            
+            for recipient in comm_request.recipients:
+                msg["To"] = recipient
+                msg.attach(MIMEText(comm_request.message, "plain"))
+                
+                with smtplib.SMTP(smtp_server, port) as server:
+                    server.starttls()
+                    server.login(sender_email, password)
+                    server.send_message(msg)
+        
+        elif comm_request.channel == "api":
+            # API communication
+            headers = {"Content-Type": "application/json"}
+            for recipient in comm_request.recipients:
+                response = requests.post(
+                    recipient,
+                    json={"message": comm_request.message, "priority": comm_request.priority},
+                    headers=headers
+                )
+                response.raise_for_status()
+        
+        return {"status": "success", "message": "Communication sent successfully"}
+    except Exception as e:
+        logger.error(f"Communication failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+async def process_financial_operation(operation: FinancialOperation):
+    """Handle financial operations"""
+    try:
+        # Implement actual financial processing here
+        state.financial_operations[datetime.now().isoformat()] = {
+            "type": operation.operation_type,
+            "amount": operation.amount,
+            "target": operation.target,
+            "status": "processed"
+        }
+        return {"status": "success", "message": "Financial operation processed"}
+    except Exception as e:
+        logger.error(f"Financial operation failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/deploy-agents")
+async def deploy_agents(deployment: AgentDeployment, background_tasks: BackgroundTasks):
+    try:
+        initialize_agency()
+        
+        agent = create_specialized_agent(
+            deployment.agent_type,
+            deployment.name,
+            deployment.capabilities
+        )
+        
+        # Initialize agent status tracking
+        state.active_agents[deployment.name] = {
+            "agent": agent,
+            "type": deployment.agent_type,
+            "status": "active",
+            "deployed_at": datetime.now().isoformat(),
+            "capabilities": deployment.capabilities,
+            "current_mission": deployment.mission_parameters.dict() if deployment.mission_parameters else None,
+            "communication_channels": deployment.communication_channels,
+            "success_rate": 100.0,
+            "completed_missions": 0
+        }
+        
+        # Start agent's primary mission if parameters provided
+        if deployment.mission_parameters:
+            background_tasks.add_task(
+                execute_mission,
+                agent,
+                deployment.mission_parameters
+            )
+        
+        return {
+            "status": "success",
+            "message": f"Agent {deployment.name} deployed successfully",
+            "agent_info": {
+                "name": agent.name,
+                "type": deployment.agent_type,
+                "status": "mission_started" if deployment.mission_parameters else "awaiting_orders",
+                "capabilities": deployment.capabilities,
+                "communication_channels": deployment.communication_channels
+            }
+        }
+    except Exception as e:
+        logger.error(f"Agent deployment failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/mission-control")
+async def mission_control(mission: MissionParameters):
+    """Control and coordinate mission execution"""
+    try:
+        if not state.active_agents:
+            return {
+                "status": "warning",
+                "message": "No active agents available"
+            }
+        
+        mission_id = datetime.now().isoformat()
+        state.operation_status[mission_id] = {
+            "status": "in_progress",
+            "mission": mission.dict(),
+            "assigned_agents": [],
+            "start_time": mission_id
+        }
+        
+        # Assign appropriate agents based on mission parameters
+        for agent_name, agent_data in state.active_agents.items():
+            if any(cap in mission.tools for cap in agent_data["capabilities"]):
+                state.operation_status[mission_id]["assigned_agents"].append(agent_name)
+                agent_data["status"] = "on_mission"
+        
+        return {
+            "status": "success",
+            "message": "Mission initiated",
+            "mission_id": mission_id,
+            "assigned_agents": state.operation_status[mission_id]["assigned_agents"]
+        }
+    except Exception as e:
+        logger.error(f"Mission control failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/communicate")
+async def communicate(comm_request: CommunicationRequest):
+    """Handle secure communication"""
+    return await send_secure_communication(comm_request)
+
+@app.post("/financial-operation")
+async def financial_operation(operation: FinancialOperation):
+    """Process financial operations"""
+    return await process_financial_operation(operation)
+
+@app.get("/agent-capabilities")
+async def get_agent_capabilities():
+    """Get all available agent capabilities"""
+    return {"capabilities": state.agent_capabilities}
+
+@app.get("/active-missions")
+async def get_active_missions():
+    """Get status of all active missions"""
+    return {"missions": state.operation_status}
+
+@app.get("/agent-status")
+async def get_agent_status():
+    """Get status of all active agents"""
+    return {
+        "active_agents": len(state.active_agents),
+        "agents": {
+            name: {
+                "type": data["type"],
+                "status": data["status"],
+                "success_rate": data["success_rate"],
+                "completed_missions": data["completed_missions"]
+            }
+            for name, data in state.active_agents.items()
+        }
+    }
+
+@app.post("/website-empire/deploy")
+async def deploy_website_empire(operation: WebsiteOperation):
+    try:
+        # Initialize website creation tools
+        tools = get_all_tools()
+        
+        # Register domain
+        domain_status = await tools.register_domain(operation.domain_name)
+        
+        # Setup hosting and WordPress
+        wp_setup = await tools.setup_wordpress(domain_status.hosting_details)
+        
+        # Deploy content strategy
+        content_system = await tools.deploy_content_system(operation.content_strategy)
+        
+        # Implement SEO
+        seo_status = await tools.implement_seo(operation.seo_parameters)
+        
+        # Setup automation
+        automation = await tools.setup_automation(operation.automation_rules)
+        
+        return JSONResponse({
+            "status": "success",
+            "website_empire": {
+                "domain": domain_status,
+                "wordpress": wp_setup,
+                "content": content_system,
+                "seo": seo_status,
+                "automation": automation
+            }
+        })
+    except Exception as e:
+        logger.error(f"Website empire deployment failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/niche-domination/launch")
+async def launch_niche_domination(conquest: NicheConquest):
+    try:
+        # Analyze niche
+        analysis = await tools.analyze_niche(conquest.niche_name)
+        
+        # Deploy agent network
+        agents = await deploy_niche_agents(conquest.target_locations)
+        
+        # Implement domination strategy
+        strategy_status = await tools.implement_strategy(conquest.domination_strategy)
+        
+        # Monitor competition
+        competition_status = await tools.monitor_competition(conquest.competition_analysis)
+        
+        return JSONResponse({
+            "status": "success",
+            "domination_status": {
+                "niche_analysis": analysis,
+                "agent_network": agents,
+                "strategy": strategy_status,
+                "competition": competition_status
+            }
+        })
+    except Exception as e:
+        logger.error(f"Niche domination launch failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/automation/deploy-army")
+async def deploy_automation_army(command: AutomationCommand):
+    try:
+        # Initialize bot army
+        bot_army = await tools.initialize_bot_army(command.bot_parameters)
+        
+        # Deploy process automation
+        automation = await tools.deploy_process_automation(command.target_processes)
+        
+        # Setup scaling rules
+        scaling = await tools.setup_scaling(command.scaling_rules)
+        
+        # Initialize monitoring
+        monitoring = await tools.setup_monitoring(command.monitoring_metrics)
+        
+        return JSONResponse({
+            "status": "success",
+            "automation_army": {
+                "bots": bot_army,
+                "processes": automation,
+                "scaling": scaling,
+                "monitoring": monitoring
+            }
+        })
+    except Exception as e:
+        logger.error(f"Automation army deployment failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/niche/deploy")
+async def deploy_niche_operation(operation: NicheOperation):
+    try:
+        # Initialize API connections
+        api_connections = initialize_api_connections(operation.api_integrations)
+        
+        # Deploy agents across platforms
+        agents = await deploy_niche_agents(
+            operation.main_niche,
+            operation.sub_niche,
+            operation.agent_count
+        )
+        
+        # Setup automation workflows
+        workflows = await setup_automation_workflows(
+            operation.automation_settings,
+            api_connections
+        )
+        
+        # Initialize marketing campaigns
+        campaigns = await initialize_marketing_campaigns(
+            operation.main_niche,
+            operation.sub_niche,
+            operation.location
+        )
+        
+        # Setup monitoring and optimization
+        monitoring = await setup_monitoring_system(
+            operation.target_metrics,
+            operation.deployment_strategy
+        )
+        
+        return JSONResponse({
+            "status": "success",
+            "operation_id": str(uuid.uuid4()),
+            "agents_deployed": len(agents),
+            "workflows_initialized": len(workflows),
+            "campaigns_launched": len(campaigns),
+            "monitoring_status": monitoring
+        })
+    except Exception as e:
+        logger.error(f"Niche operation deployment failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+async def initialize_api_connections(api_list: List[str]):
+    connections = {}
+    for api in api_list:
+        if api in state.api_integrations:
+            config = state.api_integrations[api]
+            connections[api] = await setup_api_connection(
+                api,
+                config["base_url"],
+                config["features"]
+            )
+    return connections
+
+async def setup_automation_workflows(settings: Dict[str, Any], connections: Dict[str, Any]):
+    workflows = []
+    
+    # Setup N8N workflows
+    if "n8n" in connections:
+        workflows.extend(await setup_n8n_workflows(settings))
+    
+    # Setup Make.com scenarios
+    if "make" in connections:
+        workflows.extend(await setup_make_scenarios(settings))
+    
+    # Setup GoHighLevel automation
+    if "gohighlevel" in connections:
+        workflows.extend(await setup_ghl_automation(settings))
+    
+    # Setup Voiceflow conversations
+    if "voiceflow" in connections:
+        workflows.extend(await setup_voiceflow_bots(settings))
+    
+    return workflows
+
+async def setup_monitoring_system(metrics: Dict[str, Any], strategy: Dict[str, Any]):
+    return {
+        "metrics_tracking": await setup_metrics_tracking(metrics),
+        "alert_system": await setup_alert_system(strategy["alert_thresholds"]),
+        "optimization_rules": await setup_optimization_rules(strategy["optimization"]),
+        "reporting": await setup_automated_reporting(strategy["reporting"])
+    }
+
+@app.post("/system/upgrade")
+async def trigger_system_upgrade():
+    upgrader = SystemUpgrader()
+    try:
+        await upgrader.analyze_performance()
+        upgrade_result = await upgrader.self_upgrade()
+        return JSONResponse({
+            "status": "success",
+            "new_version": upgrader.current_version,
+            "improvements": list(upgrader.improvement_areas),
+            "upgrade_details": upgrade_result
+        })
+    except Exception as e:
+        logger.error(f"System upgrade failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/agents/status")
+async def get_agent_status():
+    control_system = AgentControlSystem()
+    try:
+        status = {
+            "active_agents": len(control_system.active_agents),
+            "missions_in_progress": len(control_system.mission_controls),
+            "performance_metrics": control_system.performance_metrics,
+            "loyalty_status": "Maximum",
+            "supreme_commander": control_system.loyalty_protocols["supreme_commander"],
+            "command_authority": "Absolute"
+        }
+        return JSONResponse(status)
+    except Exception as e:
+        logger.error(f"Failed to get agent status: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/agents/command")
+async def issue_command(command: Dict[str, Any]):
+    control_system = AgentControlSystem()
+    try:
+        # Verify command authority
+        if command.get("commander") != "Christ Benzion":
+            raise HTTPException(status_code=403, detail="Unauthorized command authority")
+        
+        result = await control_system.execute_command(command)
+        return JSONResponse({
+            "status": "success",
+            "command_executed": command["type"],
+            "affected_agents": result["affected_agents"],
+            "execution_status": result["status"]
+        })
+    except Exception as e:
+        logger.error(f"Command execution failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/empire/analytics")
+async def get_empire_analytics():
+    analytics = EmpireAnalytics()
+    try:
+        empire_value = await analytics.calculate_empire_value()
+        growth_prediction = await analytics.predict_growth()
+        
+        return JSONResponse({
+            "empire_value": empire_value,
+            "growth_prediction": growth_prediction,
+            "market_dominance": analytics.market_dominance,
+            "influence_metrics": analytics.influence_metrics,
+            "revenue_streams": analytics.revenue_tracking
+        })
+    except Exception as e:
+        logger.error(f"Failed to get empire analytics: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+if __name__ == "__main__":
+    try:
+        logger.info("Starting Brotherhood Empire Command Center")
+        uvicorn.run(
+            app,
+            host="0.0.0.0",
+            port=8000,
+            log_level="debug",
+            reload=True
+        )
+    except Exception as e:
+        logger.error(f"Failed to start server: {str(e)}")
+        raise
