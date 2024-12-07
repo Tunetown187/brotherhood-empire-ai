@@ -1,10 +1,11 @@
 [build]
-  command = "pip install -r requirements-netlify.txt"
-  publish = "./src"
-  functions = "./netlify/functions"
+  command = "pip install -r requirements.txt"
+  publish = "src"
+  functions = "netlify/functions"
 
 [build.environment]
-  PYTHON_VERSION = "3.10"
+  PYTHON_VERSION = "3.11"
+  NODE_VERSION = "18"
 
 [[redirects]]
   from = "/*"
@@ -12,8 +13,9 @@
   status = 200
 
 [functions]
-  directory = "./netlify/functions"
+  directory = "netlify/functions"
   node_bundler = "esbuild"
+  included_files = ["src/**"]
 
-[functions.api]
-  included_files = ["./src/**"]
+[[plugins]]
+  package = "@netlify/plugin-functions-install-core"
