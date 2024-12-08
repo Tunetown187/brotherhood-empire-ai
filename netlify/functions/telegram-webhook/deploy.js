@@ -39,7 +39,7 @@ async function setWebhook(url) {
 }
 
 // Your Netlify URL
-const netlifyUrl = 'https://ghl-automation-ai.netlify.app';
+const netlifyUrl = 'https://deluxe-peony-baa333.netlify.app';
 const webhookUrl = `${netlifyUrl}/.netlify/functions/telegram-webhook`;
 
 console.log(`Setting webhook URL to: ${webhookUrl}`);
