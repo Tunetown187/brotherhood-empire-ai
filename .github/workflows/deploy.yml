@@ -33,26 +33,26 @@ jobs:
           publish-dir: './public'
           production-branch: main
           deploy-message: "Deploy from GitHub Actions"
+          enable-pull-request-comment: true
+          enable-commit-comment: true
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          TELEGRAM_BOT_TOKEN: "7838814763:AAGVkweVaww77zuWb6lUz4Fg6Xm5yiiEido"
 
       - name: Update Telegram Webhook
         run: |
-          curl -F "url=${{ secrets.TELEGRAM_WEBHOOK_URL }}" \
-               https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/setWebhook
+          curl -F "url=https://brotherhood-empire.netlify.app/.netlify/functions/telegram_webhook" \
+               https://api.telegram.org/bot7838814763:AAGVkweVaww77zuWb6lUz4Fg6Xm5yiiEido/setWebhook
 
       - name: Configure Make.com Webhook
         run: |
           curl -X POST \
                -H "Authorization: Token ${{ secrets.MAKE_API_KEY }}" \
                -H "Content-Type: application/json" \
-               -d '{"webhook_url": "${{ secrets.MAKE_WEBHOOK_URL }}"}' \
-               ${{ secrets.MAKE_API_ENDPOINT }}
+               -d '{"webhook_url": "https://hook.make.com/brotherhood-empire"}' \
+               https://hook.make.com/api/v2/webhooks
 
       - name: Deploy to DreamHost
         run: |
-          curl -X POST \
-               -H "Content-Type: application/json" \
-               -d '{"key": "${{ secrets.DREAMHOST_API_KEY }}"}' \
-               ${{ secrets.DREAMHOST_API_ENDPOINT }}
+          python ghl-automation/dreamhost_manager.py --deploy

@@ -1,11 +1,11 @@
 {
     "telegram": {
-        "webhook_url": "https://{YOUR_NETLIFY_SITE}.netlify.app/.netlify/functions/telegram_webhook",
-        "bot_token": "${TELEGRAM_BOT_TOKEN}",
-        "authorized_users": "${AUTHORIZED_TELEGRAM_USERS}"
+        "webhook_url": "https://brotherhood-empire.netlify.app/.netlify/functions/telegram_webhook",
+        "bot_token": "7838814763:AAGVkweVaww77zuWb6lUz4Fg6Xm5yiiEido",
+        "authorized_users": ["YOUR_TELEGRAM_USER_ID"]
     },
     "make": {
-        "webhook_url": "https://{YOUR_MAKE_WEBHOOK_URL}",
+        "webhook_url": "https://hook.make.com/brotherhood-empire",
         "api_key": "${MAKE_API_KEY}"
     },
     "gohighlevel": {
@@ -13,10 +13,10 @@
         "api_key": "${GHL_API_KEY}"
     },
     "dreamhost": {
-        "api_url": "https://api.dreamhost.com/",
+        "api_url": "https://api.dreamhost.com",
         "api_key": "${DREAMHOST_API_KEY}"
     },
     "stackblitz": {
-        "project_url": "https://stackblitz.com/edit/{YOUR_PROJECT_ID}"
+        "project_url": "https://stackblitz.com/edit/brotherhood-empire"
     }
 }
