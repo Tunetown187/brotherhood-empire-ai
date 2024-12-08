@@ -1,0 +1,17 @@
+[build]
+  command = "npm install && pip install -r requirements.txt"
+  functions = "netlify/functions"
+  publish = "public"
+
+[functions]
+  directory = "ghl-automation/netlify/functions"
+  node_bundler = "esbuild"
+
+[build.environment]
+  PYTHON_VERSION = "3.9"
+  NODE_VERSION = "16"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
