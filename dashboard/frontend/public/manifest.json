@@ -1,0 +1,8 @@
+{
+  "short_name": "AI Business Assistant",
+  "name": "AI Business Assistant Dashboard",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
