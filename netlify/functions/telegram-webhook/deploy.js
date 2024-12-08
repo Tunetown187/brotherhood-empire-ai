@@ -39,7 +39,7 @@ async function setWebhook(url) {
 }
 
 // Your Netlify URL
-const netlifyUrl = 'https://inquisitive-phoenix-3ebc6f.netlify.app';
+const netlifyUrl = 'https://brotherhood-empire-bot.netlify.app';
 const webhookUrl = `${netlifyUrl}/.netlify/functions/telegram-webhook`;
 
 console.log(`Setting webhook URL to: ${webhookUrl}`);
