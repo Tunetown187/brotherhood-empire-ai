@@ -1,0 +1,30 @@
+# ==== REQUIRED API KEYS ====
+# You must set at least ONE of these AI API keys:
+OPENAI_API_KEY=your_openai_api_key_here  # Required if using OpenAI
+DEEPSEEK_API_KEY=your_deepseek_api_key_here  # Required if using DeepSeek
+
+# ==== BUSINESS PLATFORM APIs ====
+# Make.com Integration
+MAKE_API_KEY=726acbb9-1b9f-4c78-a72f-e3ca0e0129c4
+
+# GoHighLevel Integration
+GHL_API_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2NhdGlvbl9pZCI6InVOeWRTOFJPZlJDTVoxY1c4aW1zIiwidmVyc2lvbiI6MSwiaWF0IjoxNzI3NjQ0OTcyMjU0LCJzdWIiOiJqNlhJSzN5RzdpOU40bXVBWGhNMSJ9.P8ClaucpuePeUT7DGXVm3psmnHjOr1n1SVObXmBdEcg
+GHL_LOCATION_ID=uNydS8ROfRCMZ1cW8ims  # Extracted from the JWT token
+
+# VAPI.ai Integration
+VAPI_API_KEY=0bf4afe1-da5c-4ca8-ae86-351b3ca4762e
+
+# ==== AUTOMATION TOOLS ====
+# OpenAdapt Configuration
+OPENADAPT_CONFIG_PATH=./config/openadapt
+OPENADAPT_RECORDING_DIR=./recordings
+
+# Skyvern Configuration
+SKYVERN_API_KEY=your_skyvern_api_key_here  # Required for web automation
+SKYVERN_BROWSER_PATH=./browser
+
+# ==== SYSTEM CONFIGURATION ====
+MAX_AGENTS=1000000  # Maximum number of AI agents to run
+RESOURCE_ALLOCATION_STRATEGY=dynamic
+LOG_LEVEL=info
+NODE_ENV=development

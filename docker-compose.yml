@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  automation_core:
+    build: 
+      context: .
+      dockerfile: dockerfiles/automation.dockerfile
+    environment:
+      - SECURE_MODE=true
+      - ANONYMOUS_MODE=true
+    volumes:
+      - ./data:/app/data
+    restart: always
+
+  ecommerce:
+    build:
+      context: .
+      dockerfile: dockerfiles/ecommerce.dockerfile
+    depends_on:
+      - automation_core
+    volumes:
+      - ./store_data:/app/store_data
+    restart: always
+
+  affiliate:
+    build:
+      context: .
+      dockerfile: dockerfiles/affiliate.dockerfile
+    depends_on:
+      - automation_core
+    volumes:
+      - ./affiliate_data:/app/affiliate_data
+    restart: always
+
+  telegram_bot:
+    build:
+      context: .
+      dockerfile: dockerfiles/telegram.dockerfile
+    depends_on:
+      - automation_core
+    environment:
+      - BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+    restart: always
+
+  database:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=automation
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  monitoring:
+    build:
+      context: .
+      dockerfile: dockerfiles/monitoring.dockerfile
+    ports:
+      - "9090:9090"
+    depends_on:
+      - automation_core
+    restart: always
+
+  crypto-api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONPATH=/app
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+    
+  crypto-manager:
+    build: .
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONPATH=/app
+    command: python automation/crypto_manager.py
+    
+  defi-manager:
+    build: .
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONPATH=/app
+    command: python automation/defi_manager.py
+    
+  nft-manager:
+    build: .
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONPATH=/app
+    command: python automation/nft_manager.py
+    
+  metaverse-manager:
+    build: .
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONPATH=/app
+    command: python automation/metaverse_manager.py
+    
+  master-controller:
+    build: .
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONPATH=/app
+    command: python master_controller.py
+
+volumes:
+  postgres_data:

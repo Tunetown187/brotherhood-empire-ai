@@ -1,0 +1,17 @@
+[
+  {
+    "timestamp": "2024-12-07T21:43:13.591198",
+    "role": "system",
+    "content": "Session started"
+  },
+  {
+    "timestamp": "2024-12-07T21:43:13.591198",
+    "role": "user",
+    "content": "Hello, this is a test message"
+  },
+  {
+    "timestamp": "2024-12-07T21:43:13.592200",
+    "role": "assistant",
+    "content": "Hi! I've received your message and logged it"
+  }
+]

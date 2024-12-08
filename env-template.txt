@@ -1,0 +1,55 @@
+# ==== REQUIRED API KEYS ====
+# You must set at least ONE of these AI API keys:
+OPENAI_API_KEY=your_openai_api_key_here  # Required if using OpenAI
+DEEPSEEK_API_KEY=your_deepseek_api_key_here  # Required if using DeepSeek
+
+# ==== BUSINESS PLATFORM APIs ====
+# Make.com Integration (Default test key provided)
+MAKE_API_KEY=726acbb9-1b9f-4c78-a72f-e3ca0e0129c4
+
+# GoHighLevel Integration
+GHL_API_KEY=your_ghl_api_key_here
+GHL_LOCATION_ID=your_location_id  # Optional: Only needed if working with specific location
+
+# ==== AUTOMATION TOOLS ====
+# OpenAdapt Configuration
+OPENADAPT_CONFIG_PATH=./config/openadapt  # Default path, change if needed
+OPENADAPT_RECORDING_DIR=./recordings  # Where to store automation recordings
+
+# Skyvern Configuration
+SKYVERN_API_KEY=your_skyvern_api_key_here  # Required for web automation
+SKYVERN_BROWSER_PATH=./browser  # Default browser profile path
+
+# ==== OPTIONAL INTEGRATIONS ====
+# Only set these if you're using the corresponding features
+
+# Cloud Storage (Optional)
+AWS_ACCESS_KEY_ID=your_aws_access_key_here
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key_here
+AWS_REGION=us-east-1
+S3_BUCKET_NAME=your_bucket_name
+
+# Communication (Optional)
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
+
+# Payments (Optional)
+STRIPE_SECRET_KEY=your_stripe_secret_key_here
+STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key_here
+
+# Database (Optional)
+FIREBASE_PROJECT_ID=your_firebase_project_id
+FIREBASE_PRIVATE_KEY=your_firebase_private_key
+FIREBASE_CLIENT_EMAIL=your_firebase_client_email
+
+# ==== SYSTEM CONFIGURATION ====
+# These have default values but can be customized
+MAX_AGENTS=1000000  # Maximum number of AI agents to run
+RESOURCE_ALLOCATION_STRATEGY=dynamic  # Options: dynamic, static
+LOG_LEVEL=info  # Options: debug, info, warning, error
+NODE_ENV=development  # Options: development, production
+
+# ==== SECURITY ====
+# Generate strong random keys for these
+ENCRYPTION_KEY=generate_a_strong_random_key  # Used for data encryption
+JWT_SECRET=generate_a_strong_random_key  # Used for API authentication
+API_KEY=generate_a_strong_random_key  # Used for internal API calls

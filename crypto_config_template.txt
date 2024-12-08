@@ -1,0 +1,16 @@
+# Binance API Configuration
+BINANCE_API_KEY=your_binance_api_key_here
+BINANCE_SECRET=your_binance_secret_here
+
+# Coinbase API Configuration  
+COINBASE_API_KEY=your_coinbase_api_key_here
+COINBASE_SECRET=your_coinbase_secret_here
+
+# Infura Configuration (for Web3)
+INFURA_KEY=your_infura_project_id_here
+
+# IMPORTANT: 
+# 1. Rename this file to .env
+# 2. Replace the placeholder values with your actual API keys
+# 3. Never commit the .env file with real keys to version control
+# 4. Keep your API keys secure and never share them

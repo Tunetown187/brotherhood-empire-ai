@@ -1,0 +1,56 @@
+{
+    "networks": {
+        "ethereum": {
+            "rpc_url": "https://mainnet.infura.io/v3/YOUR_INFURA_KEY",
+            "chain_id": 1
+        },
+        "polygon": {
+            "rpc_url": "https://polygon-rpc.com",
+            "chain_id": 137
+        },
+        "bsc": {
+            "rpc_url": "https://bsc-dataseed.binance.org",
+            "chain_id": 56
+        }
+    },
+    "exchanges": {
+        "binance": {
+            "api_key": "",
+            "api_secret": ""
+        },
+        "coinbase": {
+            "api_key": "",
+            "api_secret": ""
+        }
+    },
+    "telegram": {
+        "bot_token": "",
+        "chat_id": ""
+    },
+    "ipfs": {
+        "gateway": "https://ipfs.io/ipfs/",
+        "pinning_service": "pinata"
+    },
+    "nft": {
+        "marketplace": "opensea",
+        "collection_name": "MyNFTCollection",
+        "symbol": "MNFT",
+        "description": "A unique collection of digital assets"
+    },
+    "defi": {
+        "default_network": "polygon",
+        "gas_limit": 3000000,
+        "slippage": 0.5
+    },
+    "metaverse": {
+        "platform": "decentraland",
+        "land_registry": "",
+        "asset_registry": ""
+    },
+    "security": {
+        "max_gas_price": 300,
+        "min_liquidity": 100000,
+        "max_slippage": 2,
+        "blacklist": []
+    }
+}

@@ -201,3 +201,13 @@ Thumbs.db
 *.bak
 *.tmp
 *.temp
+
+# Sensitive files
+master.key
+firebase-key.json
+*.pem
+*.key
+
+# Local development
+*.log
+node_modules/
