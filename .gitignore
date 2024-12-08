@@ -24,7 +24,6 @@ share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -169,3 +168,36 @@ tests/settings.json
 # Local Netlify folder
 .netlify
 node_modules
+
+# Python
+# __pycache__/ is already included above
+
+# Virtual Environment
+# venv/, env/, ENV/ are already included above
+
+# IDE
+.vscode/
+*.swp
+*.swo
+
+# Logs
+logs/
+empire_operations.log
+
+# Environment variables
+.env.local
+.env.*.local
+
+# API Keys and Credentials
+firebase-credentials.json
+*credentials*.json
+*token*.json
+
+# Operating System
+.DS_Store
+Thumbs.db
+
+# Other
+*.bak
+*.tmp
+*.temp
