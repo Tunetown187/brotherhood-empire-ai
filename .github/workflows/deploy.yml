@@ -53,7 +53,7 @@ jobs:
         STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
       run: |
         # Start the master controller
-        python empire_core/master_controller.py &
+        python ghl-automation/empire_core/master_controller.py &
         
         # Start individual agents
         python ghl-automation/ai_sales_agent.py &
