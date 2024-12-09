@@ -1,10 +1,11 @@
 {
   "name": "telegram-webhook",
   "version": "1.0.0",
-  "description": "Brotherhood Empire Telegram Bot webhook handler",
+  "description": "Brotherhood Empire Telegram Bot Webhook",
   "main": "index.js",
   "dependencies": {
-    "axios": "^1.6.2"
+    "axios": "^1.6.2",
+    "node-fetch": "^3.3.2"
   },
   "scripts": {
     "deploy": "node deploy.js"

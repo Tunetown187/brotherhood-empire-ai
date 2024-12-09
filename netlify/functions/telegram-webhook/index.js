@@ -185,79 +185,58 @@ const commandHandlers = {
   }
 };
 
-exports.handler = async function(event, context) {
-  console.log('Received webhook event:', event.httpMethod);
-  console.log('Headers:', JSON.stringify(event.headers, null, 2));
-  
-  // Only allow POST requests
+exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
-    return { 
-      statusCode: 405, 
-      body: JSON.stringify({ error: 'Method Not Allowed' })
-    };
+    return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
   try {
-    console.log('Request body:', event.body);
-    const data = JSON.parse(event.body);
-    console.log('Parsed update:', JSON.stringify(data, null, 2));
+    const body = JSON.parse(event.body);
+    console.log('Received update:', JSON.stringify(body, null, 2));
 
-    // Handle incoming message
-    if (data.message) {
-      const chatId = data.message.chat.id;
-      const text = data.message.text || '';
-      const username = data.message.from.username;
+    // Process the update
+    if (body.message) {
+      const chatId = body.message.chat.id;
+      const text = body.message.text;
 
-      console.log(`Received message: "${text}" from chat ${chatId} (${username})`);
+      // Prepare response
+      let responseText = '';
 
-      // Handle commands
-      if (text.startsWith('/')) {
-        const parts = text.split(' ');
-        const command = parts[0].toLowerCase();
-        const args = parts.slice(1);
-        console.log('Processing command:', command, 'with args:', args);
-        
-        if (commandHandlers[command]) {
-          try {
-            await commandHandlers[command](chatId, args);
-            console.log('Command handled successfully:', command);
-          } catch (error) {
-            console.error('Error executing command:', error);
-            await sendTelegramMessage(chatId, 
-              '❌ Error executing command:\n' +
-              `${error.message}\n\n` +
-              'Please try again or use /help for assistance.'
-            );
-          }
-        } else {
-          console.log('Unknown command:', command);
-          await sendTelegramMessage(chatId, 
-            '❓ Unknown command.\n\n' +
-            'Use /help to see available commands.'
-          );
-        }
+      if (text === '/start') {
+        responseText = '🏰 Welcome to Brotherhood Empire!\n\nI am your AI assistant. Here are my commands:\n/status - Check system status\n/deploy - Deploy new agents\n/help - Show all commands';
+      } else if (text === '/status') {
+        responseText = '✨ Brotherhood Empire Status:\n\n' +
+          '🤖 AI Agents: OPERATIONAL\n' +
+          '💼 Business Operations: ACTIVE\n' +
+          '🌐 Network Status: OPTIMAL\n' +
+          '🔒 Security Level: MAXIMUM';
+      } else if (text === '/help') {
+        responseText = '🤖 Available Commands:\n\n' +
+          '/start - Initialize the bot\n' +
+          '/status - Check system status\n' +
+          '/deploy - Deploy new agents\n' +
+          '/help - Show this help message';
       } else {
-        console.log('Non-command message received');
-        await sendTelegramMessage(chatId, 
-          '👋 Hi! I respond to commands only.\n\n' +
-          'Send /help to see what I can do!'
-        );
+        responseText = '🤖 Processing your request...';
       }
-    }
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ status: 'ok' })
-    };
+      // Send response back to Telegram
+      await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        chat_id: chatId,
+        text: responseText,
+        parse_mode: 'Markdown'
+      });
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ message: 'Success' })
+      };
+    }
   } catch (error) {
-    console.error('Error processing webhook:', error);
+    console.error('Error:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ 
-        error: 'Error processing message', 
-        details: error.message,
-        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-      })
+      body: JSON.stringify({ error: 'Failed to process webhook' })
     };
   }
-}
+};
