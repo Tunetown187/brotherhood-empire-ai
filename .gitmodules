@@ -1,0 +1,12 @@
+[submodule "brotherhood-empire-final"]
+	path = brotherhood-empire-final
+	url = https://github.com/Tunetown187/brotherhood-empire-final.git
+[submodule "brotherhood-empire-new"]
+	path = brotherhood-empire-new
+	url = https://github.com/Tunetown187/brotherhood-empire-new.git
+[submodule "ghl-automation"]
+	path = ghl-automation
+	url = https://github.com/Tunetown187/ghl-automation.git
+[submodule "mobile_app"]
+	path = mobile_app
+	url = https://github.com/Tunetown187/mobile_app.git
