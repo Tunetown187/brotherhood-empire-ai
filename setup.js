@@ -8,6 +8,77 @@ const execAsync = util.promisify(exec);
 const NETLIFY_SITE_URL = 'https://ghl-automation-ai.netlify.app';
 const TELEGRAM_BOT_TOKEN = '7838814763:AAGVkweVaww77zuWb6lUz4Fg6Xm5yiiEido';
 
+// Netlify Configuration
+process.env.NETLIFY_AUTH_TOKEN = 'nfp_M3s5cHYq5ZFmEP6F7iyvra832ykWULYC9286';
+process.env.NETLIFY_SITE_ID = '05718948-f2fe-47e6-80a1-e32f1b20d5fe';
+
+// Stripe Configuration
+process.env.STRIPE_SECRET_KEY = 'YOUR_STRIPE_SECRET_KEY';
+process.env.STRIPE_PUBLISHABLE_KEY = 'YOUR_STRIPE_PUBLISHABLE_KEY';
+process.env.STRIPE_WEBHOOK_SECRET = 'YOUR_STRIPE_WEBHOOK_SECRET';
+
+// GoHighLevel Integration for Payments
+const GHL_CONFIG = {
+  apiKey: process.env.GHL_API_KEY,
+  location: process.env.GHL_LOCATION_ID || 'default',
+  paymentProcessor: 'stripe'
+};
+
+// Payment Configuration using GoHighLevel
+const PAYMENT_CONFIG = {
+  useGHL: true,
+  packages: {
+    basic: {
+      name: 'Basic Package',
+      price: 997,
+      features: ['Lead Generation', 'Basic Automation', 'Email Marketing'],
+      ghlProductId: 'YOUR_GHL_BASIC_PRODUCT_ID'
+    },
+    premium: {
+      name: 'Premium Package',
+      price: 1997,
+      features: ['Advanced Automation', 'Full Marketing Suite', 'Priority Support'],
+      ghlProductId: 'YOUR_GHL_PREMIUM_PRODUCT_ID'
+    },
+    enterprise: {
+      name: 'Enterprise Package',
+      price: 4997,
+      features: ['Custom Solutions', 'Dedicated Account Manager', 'White Label'],
+      ghlProductId: 'YOUR_GHL_ENTERPRISE_PRODUCT_ID'
+    }
+  },
+  cryptoEnabled: true,
+  cryptoWallet: 'YOUR_CRYPTO_WALLET_ADDRESS'
+};
+
+// Initialize GHL API client
+const initGHLPayments = async () => {
+  try {
+    const axios = require('axios');
+    const ghlClient = axios.create({
+      baseURL: 'https://rest.gohighlevel.com/v1/',
+      headers: {
+        'Authorization': `Bearer ${GHL_CONFIG.apiKey}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    // Verify GHL connection
+    const response = await ghlClient.get('locations/');
+    console.log('✅ GoHighLevel connection established');
+    return ghlClient;
+  } catch (error) {
+    console.error('❌ Error connecting to GoHighLevel:', error.message);
+    throw error;
+  }
+};
+
+module.exports = { 
+  PAYMENT_CONFIG,
+  GHL_CONFIG,
+  initGHLPayments
+};
+
 async function checkDependencies() {
   console.log('\n📦 Checking dependencies...');
   
