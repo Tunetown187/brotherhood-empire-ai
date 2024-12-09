@@ -1,11 +1,10 @@
-const { CommunicationAgent, SalesAgent, MarketingAgent, OperationsAgent, WebDevAgent, SEOAgent, BusinessAgent } = require('../empire_core/ai_agents');
-const { PAYMENT_CONFIG } = require('../setup');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const Web3 = require('web3');
+const { CommunicationAgent, SalesAgent, MarketingAgent, OperationsAgent, WebDevAgent, SEOAgent, BusinessAgent, CryptoTradingAgent } = require('../empire_core/ai_agents');
+const winston = require('winston');
 
 class AgentOrchestrator {
     constructor() {
         this.agents = {
+            crypto: new CryptoTradingAgent(),
             communication: new CommunicationAgent(),
             sales: new SalesAgent(),
             marketing: new MarketingAgent(),
@@ -15,33 +14,41 @@ class AgentOrchestrator {
             business: new BusinessAgent()
         };
         
-        this.web3 = new Web3();
-        this.initializePaymentProcessors();
+        this.totalProfits = 0;
+        this.logger = winston.createLogger({
+            level: 'info',
+            format: winston.format.combine(
+                winston.format.timestamp(),
+                winston.format.json()
+            ),
+            transports: [
+                new winston.transports.File({ filename: 'empire_profits.log' })
+            ]
+        });
     }
 
-    async initializePaymentProcessors() {
-        // Initialize Stripe
-        this.stripe = stripe;
-
-        // Initialize crypto if enabled
-        if (PAYMENT_CONFIG.cryptoEnabled) {
-            this.cryptoWallet = PAYMENT_CONFIG.cryptoWallet;
+    async calculateTotalProfits() {
+        let total = 0;
+        for (const [name, agent] of Object.entries(this.agents)) {
+            const profit = await agent.reportProfits();
+            total += profit;
         }
+        this.totalProfits = total;
+        this.logger.info(`Total Empire Profits: $${total.toLocaleString()}`);
+        return total;
     }
 
-    async startContinuousOperation() {
-        console.log('🚀 Starting Brotherhood Empire AI Agents...');
-        
-        // Start all agents in parallel
-        await Promise.all([
-            this.runCommunicationAgent(),
-            this.runSalesAgent(),
-            this.runMarketingAgent(),
-            this.runOperationsAgent(),
-            this.runWebDevAgent(),
-            this.runSEOAgent(),
-            this.runBusinessAgent()
-        ]);
+    async runCryptoAgent() {
+        while (true) {
+            try {
+                await this.agents.crypto.executeTrades();
+                await this.agents.crypto.monitorMarkets();
+                await this.calculateTotalProfits();
+                await new Promise(resolve => setTimeout(resolve, 1000)); // 1-second interval
+            } catch (error) {
+                console.error('Crypto Agent Error:', error);
+            }
+        }
     }
 
     async runCommunicationAgent() {
@@ -61,7 +68,6 @@ class AgentOrchestrator {
             try {
                 await this.agents.sales.processLeads();
                 await this.agents.sales.negotiateDeals();
-                await this.handlePayments();
                 await new Promise(resolve => setTimeout(resolve, 10000)); // 10-second interval
             } catch (error) {
                 console.error('Sales Agent Error:', error);
@@ -129,28 +135,20 @@ class AgentOrchestrator {
         }
     }
 
-    async handlePayments() {
-        try {
-            // Process Stripe payments
-            const pendingPayments = await this.stripe.paymentIntents.list({
-                limit: 100,
-                status: 'requires_capture'
-            });
-
-            for (const payment of pendingPayments.data) {
-                await this.stripe.paymentIntents.capture(payment.id);
-                console.log(`💰 Payment captured: ${payment.amount / 100} ${payment.currency.toUpperCase()}`);
-            }
-
-            // Handle crypto payments if enabled
-            if (PAYMENT_CONFIG.cryptoEnabled) {
-                const balance = await this.web3.eth.getBalance(this.cryptoWallet);
-                console.log(`💎 Crypto wallet balance: ${this.web3.utils.fromWei(balance, 'ether')} ETH`);
-            }
-
-        } catch (error) {
-            console.error('Payment Processing Error:', error);
-        }
+    async startContinuousOperation() {
+        console.log('🚀 Starting Brotherhood Empire AI Agents...');
+        
+        // Start all agents in parallel
+        await Promise.all([
+            this.runCryptoAgent(),
+            this.runCommunicationAgent(),
+            this.runSalesAgent(),
+            this.runMarketingAgent(),
+            this.runOperationsAgent(),
+            this.runWebDevAgent(),
+            this.runSEOAgent(),
+            this.runBusinessAgent()
+        ]);
     }
 }
 
