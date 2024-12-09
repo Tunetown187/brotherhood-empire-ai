@@ -211,3 +211,7 @@ firebase-key.json
 # Local development
 *.log
 node_modules/
+
+# Conversation logs and backups
+conversation_logs/
+bookmarks_data/
