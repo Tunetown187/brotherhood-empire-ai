@@ -32,3 +32,5 @@ jobs:
             mkdocs-material-
       - run: pip install -r requirements_docs.txt
       - run: mkdocs gh-deploy --force
+      - name: Post-deploy info
+        run: echo "Documentation successfully deployed to GitHub Pages. To disable this workflow, rename or delete docs.yml."

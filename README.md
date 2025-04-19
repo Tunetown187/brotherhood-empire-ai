@@ -129,6 +129,17 @@ If a secret is missing, the corresponding step will be skipped (not fail).
 - Add deployable content to `brotherhood-empire-final/`.
 - Keep `requirements.txt` up to date.
 
+## 📄 Documentation
+
+This project uses [MkDocs](https://www.mkdocs.org/) for documentation. Docs are published automatically to GitHub Pages on every push to `main` or `master` via the `.github/workflows/docs.yml` workflow.
+
+- To edit documentation, modify the files in the `docs/` directory and push your changes.
+- The navigation and site settings are in `mkdocs.yml`.
+- The workflow installs dependencies from `requirements_docs.txt`.
+
+**To disable documentation deployment:**
+Rename or delete `.github/workflows/docs.yml`.
+
 ---
 
 For further help, edit this README or contact your project maintainer.

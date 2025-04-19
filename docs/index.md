@@ -51,6 +51,8 @@ If you need help creating custom agent swarms for your business, check out our [
 
 ---
 
+> **Note:** This documentation is automatically deployed to GitHub Pages on every push to `main` or `master` via the `docs.yml` workflow. To edit the documentation, update the files in the `docs/` directory and push your changes.
+
 ## License
 
 This project is licensed under the terms of the MIT license.
