@@ -30,6 +30,8 @@ jobs:
           path: .cache
           restore-keys: |
             mkdocs-material-
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$(pwd):$(pwd)/agency_swarm:$PYTHONPATH" >> $GITHUB_ENV
       - run: pip install -r requirements_docs.txt
       - run: mkdocs gh-deploy --force
       - name: Post-deploy info

@@ -39,6 +39,7 @@ theme:
         name: Switch to system preference
 nav:
   - Introduction: "index.md"
+  - Showcase: "introduction/showcase.md"
   - Quick Start: "quick_start.md"
   - Advanced Usage:
     - Advanced Tools: "advanced-usage/tools.md"
