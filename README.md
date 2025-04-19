@@ -95,3 +95,40 @@ The system uses a modular architecture with:
 
 This project is proprietary software owned by Brotherhood Empire.
 All rights reserved.
+
+---
+
+# GitHub Actions Workflow Guide
+
+This project is configured for automated deployment using GitHub Actions. Below are the steps and requirements for successful CI/CD:
+
+## Directory Structure
+
+- `update_requirements.py` — Updates dependencies (placeholder provided)
+- `requirements.txt` — Python requirements (ensure this is up to date)
+- `master_controller.py` — Entry point for master controller (placeholder provided)
+- `main.py` — Entry point for agent logic (placeholder provided)
+- `brotherhood-empire-final/` — Directory for deployable site (empty placeholder provided)
+- `.github/workflows/deploy.yml` — GitHub Actions workflow file
+
+## GitHub Actions Secrets Required
+
+Set these in your repository Settings > Secrets and variables > Actions:
+- `VERCEL_TOKEN`, `ORG_ID`, `PROJECT_ID` (for Vercel deploy)
+- `NETLIFY_AUTH_TOKEN`, `NETLIFY_SITE_ID` (for Netlify deploy)
+- `TELEGRAM_BOT_TOKEN`, `GHL_API_KEY`, `MAKE_WEBHOOK_URL`, `AWS_ACCESS_KEY`, `AWS_SECRET_KEY`, `STRIPE_SECRET_KEY`, `FIREBASE_ADMIN_KEY`, `OPENAI_API_KEY` (for agent startup)
+
+If a secret is missing, the corresponding step will be skipped (not fail).
+
+## How to Deploy
+- Push to the `main` branch or open a PR targeting `main`.
+- The workflow will run automatically.
+
+## Next Steps
+- Replace the placeholder scripts with your actual logic.
+- Add deployable content to `brotherhood-empire-final/`.
+- Keep `requirements.txt` up to date.
+
+---
+
+For further help, edit this README or contact your project maintainer.

@@ -50,8 +50,14 @@ jobs:
       uses: amondnet/vercel-action@v20
       with:
         vercel-token: ${{ secrets.VERCEL_TOKEN }}
+<<<<<<< HEAD
         vercel-org-id: ${{ secrets.ORG_ID}}
         vercel-project-id: ${{ secrets.PROJECT_ID }}
+=======
+        vercel-org-id: ${{ secrets.ORG_ID }}
+        vercel-project-id: ${{ secrets.PROJECT_ID }}
+      if: ${{ env.VERCEL_TOKEN && env.ORG_ID && env.PROJECT_ID }}
+>>>>>>> 77566c6 (Setup project for CI/CD: add workflow, placeholders, and deployment structure)
         
     - name: Deploy to Netlify
       uses: nwtgck/actions-netlify@v1.2
@@ -63,6 +69,10 @@ jobs:
       env:
         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+<<<<<<< HEAD
+=======
+      if: ${{ env.NETLIFY_AUTH_TOKEN && env.NETLIFY_SITE_ID }}
+>>>>>>> 77566c6 (Setup project for CI/CD: add workflow, placeholders, and deployment structure)
         
     - name: Start AI Agents
       env:
@@ -83,3 +93,7 @@ jobs:
         
         # Keep the workflow running
         tail -f /dev/null
+<<<<<<< HEAD
+=======
+      if: ${{ env.TELEGRAM_BOT_TOKEN && env.GHL_API_KEY && env.MAKE_WEBHOOK_URL && env.AWS_ACCESS_KEY && env.AWS_SECRET_KEY && env.STRIPE_SECRET_KEY && env.FIREBASE_ADMIN_KEY && env.OPENAI_API_KEY }}
+>>>>>>> 77566c6 (Setup project for CI/CD: add workflow, placeholders, and deployment structure)
